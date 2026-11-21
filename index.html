@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JTS Experiencias</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+/* =====================================================================
+   ✏️  TODO LO QUE PUEDES CAMBIAR ESTÁ AQUÍ ARRIBA
+   (Guarda el archivo y recarga la página para ver tus cambios.)
+   ===================================================================== */
+
+/* 🔗 TU LINK: a dónde lleva el botón grande del final.
+   Puede ser tu WhatsApp (https://wa.me/52XXXXXXXXXX), tu página o tu Instagram. */
+const MI_LINK = "https://wa.me/51964434810";
+
+/* 💬 Si tu link es de WhatsApp, la app le agrega un mensaje ya escrito con la
+   experiencia que eligió tu cliente. Ponlo en false si no lo quieres. */
+const AGREGAR_RESUMEN_AL_WHATSAPP = true;
+
+/* 🎨 TUS COLORES (códigos hex). */
+const COLORES = {
+  fondo:      "#474B2D", // fondo principal (verde oliva)
+  fondo2:     "#3A3D24", // tarjetas y paneles (oliva más oscuro)
+  dorado:     "#FFFFFF", // color de acento (botones, detalles)
+  doradoClaro:"#E9EADF", // acento suave (hover de botones)
+  crema:      "#FFFFFF", // texto principal
+  suave:      "#D2D4C2", // texto secundario
+};
+
+/* 🏷️ TEXTOS DE TU MARCA */
+const MARCA = {
+  nombre: "JTS Experiencias",
+  eslogan: "Eventos corporativos de alto nivel. Tú eliges la experiencia; nosotros nos encargamos de todo.",
+  botonEmpezar: "Arma tu experiencia en 4 preguntas",
+  tituloCatalogo: "Nuestro catálogo",
+  tituloResultado: "Tu experiencia ideal",
+  botonFinal: "Quiero cotizar esta experiencia",
+  notaFinal: "Te respondemos con una propuesta a la medida de tu empresa.",
+  pie: "© JTS Experiencias",
+};
+
+/* ❓ LAS PREGUNTAS. Cada opción tiene un "valor" (no lo cambies si no cambias
+   también el catálogo) y una "etiqueta" (lo que se lee en pantalla, cámbiala libre). */
+const PREGUNTAS = [
+  {
+    id: "objetivo",
+    razon: "Cumple tu objetivo: {opcion}",   // frase del resultado ("Por qué es para ti")
+    titulo: "¿Qué quieres lograr con tu evento?",
+    ayuda: "Elige el objetivo principal.",
+    opciones: [
+      { valor: "integracion", etiqueta: "Unir a mi equipo",        detalle: "Integración y team building" },
+      { valor: "celebrar",    etiqueta: "Celebrar logros",         detalle: "Reconocer metas cumplidas" },
+      { valor: "clientes",    etiqueta: "Consentir a clientes VIP", detalle: "Relaciones de alto valor" },
+      { valor: "lanzamiento", etiqueta: "Lanzar algo nuevo",       detalle: "Producto, marca o sede" },
+      { valor: "finanio",     etiqueta: "Fiesta de fin de año",    detalle: "Cerrar el año en grande" },
+    ],
+  },
+  {
+    id: "tamano",
+    razon: "Funciona para grupos de {opcion} personas",
+    titulo: "¿Cuántas personas asistirán?",
+    ayuda: "Un aproximado es suficiente.",
+    opciones: [
+      { valor: "xs", etiqueta: "10 a 30",   detalle: "Grupo íntimo" },
+      { valor: "s",  etiqueta: "30 a 80",   detalle: "Equipo o área completa" },
+      { valor: "m",  etiqueta: "80 a 200",  detalle: "Varias áreas" },
+      { valor: "l",  etiqueta: "Más de 200", detalle: "Toda la empresa" },
+    ],
+  },
+  {
+    id: "ambiente",
+    razon: "Tiene el ambiente que buscas: {opcion}",
+    titulo: "¿Qué ambiente imaginas?",
+    ayuda: "El estilo que más va con tu gente.",
+    opciones: [
+      { valor: "aventura",    etiqueta: "Aventura al aire libre", detalle: "Naturaleza y adrenalina" },
+      { valor: "gastronomia", etiqueta: "Gastronomía",            detalle: "Chefs, catas y sabores" },
+      { valor: "cultura",     etiqueta: "Arte y cultura",         detalle: "Experiencias con historia" },
+      { valor: "bienestar",   etiqueta: "Bienestar",              detalle: "Calma, foco y energía" },
+      { valor: "gala",        etiqueta: "Gala y fiesta",          detalle: "Elegancia y celebración" },
+    ],
+  },
+  {
+    id: "formato",
+    razon: "Se adapta a tu tiempo: {opcion}",
+    titulo: "¿Cuánto tiempo tienes?",
+    ayuda: "La duración de la experiencia.",
+    opciones: [
+      { valor: "medio",   etiqueta: "Medio día",      detalle: "3 a 5 horas" },
+      { valor: "dia",     etiqueta: "Día completo",   detalle: "Mañana a noche" },
+      { valor: "finde",   etiqueta: "Fin de semana",  detalle: "Fuera de la ciudad" },
+    ],
+  },
+];
+
+/* ⚖️ Cuánto pesa cada pregunta al elegir la experiencia ideal (más alto = más importante). */
+const PESOS = { objetivo: 4, ambiente: 3, tamano: 2, formato: 2 };
+
+/* 🗂️ TU CATÁLOGO DE EXPERIENCIAS.
+   - "idealPara" usa los "valor" de las preguntas de arriba.
+   - "inversion" va de 1 a 4 (se muestra como ●●○○). */
+const CATALOGO = [
+  {
+    nombre: "Rally Ejecutivo en la Naturaleza",
+    categoria: "Aventura",
+    descripcion: "Retos en equipo entre bosques y montaña, con guías certificados y un cierre con comida campestre.",
+    incluye: ["Transporte privado", "Guías y equipo de seguridad", "Dinámicas de liderazgo", "Comida campestre"],
+    inversion: 2,
+    idealPara: { objetivo: ["integracion", "celebrar"], tamano: ["xs", "s", "m"], ambiente: ["aventura"], formato: ["medio", "dia"] },
+  },
+  {
+    nombre: "Cena de Autor con Chef Privado",
+    categoria: "Gastronomía",
+    descripcion: "Un menú de 7 tiempos creado para tu empresa, en un espacio exclusivo y con maridaje.",
+    incluye: ["Chef y brigada privada", "Menú personalizado", "Maridaje de vinos", "Ambientación y música en vivo"],
+    inversion: 4,
+    idealPara: { objetivo: ["clientes", "celebrar"], tamano: ["xs", "s"], ambiente: ["gastronomia", "gala"], formato: ["medio"] },
+  },
+  {
+    nombre: "Retiro de Bienestar y Liderazgo",
+    categoria: "Bienestar",
+    descripcion: "Un fin de semana para recargar energía: yoga, mindfulness y talleres de liderazgo consciente.",
+    incluye: ["Hospedaje boutique", "Facilitadores expertos", "Alimentación saludable", "Spa y actividades"],
+    inversion: 3,
+    idealPara: { objetivo: ["integracion", "celebrar"], tamano: ["xs", "s"], ambiente: ["bienestar"], formato: ["finde", "dia"] },
+  },
+  {
+    nombre: "Gala de Fin de Año",
+    categoria: "Gala",
+    descripcion: "Una noche de película: venue de lujo, show en vivo, premiaciones y producción completa.",
+    incluye: ["Venue y decoración temática", "Banquete y barra libre", "Show y DJ", "Premiaciones y fotografía"],
+    inversion: 4,
+    idealPara: { objetivo: ["finanio", "celebrar"], tamano: ["m", "l"], ambiente: ["gala"], formato: ["dia"] },
+  },
+  {
+    nombre: "Taller de Mixología y Cata",
+    categoria: "Gastronomía",
+    descripcion: "Tu equipo aprende a preparar cocteles de autor con bartenders profesionales. Divertido y memorable.",
+    incluye: ["Bartenders profesionales", "Insumos premium", "Cata guiada", "Botanas gourmet"],
+    inversion: 2,
+    idealPara: { objetivo: ["integracion", "clientes", "celebrar"], tamano: ["xs", "s"], ambiente: ["gastronomia"], formato: ["medio"] },
+  },
+  {
+    nombre: "Lanzamiento con Producción Inmersiva",
+    categoria: "Gala",
+    descripcion: "Presenta tu producto o marca con escenografía, mapping, prensa e invitados especiales.",
+    incluye: ["Producción y escenografía", "Mapping y pantallas", "Coordinación de prensa", "Coctel para invitados"],
+    inversion: 4,
+    idealPara: { objetivo: ["lanzamiento"], tamano: ["s", "m", "l"], ambiente: ["gala", "cultura"], formato: ["medio", "dia"] },
+  },
+  {
+    nombre: "Ruta Cultural Privada",
+    categoria: "Cultura",
+    descripcion: "Museos y lugares históricos a puerta cerrada, con historiadores y una comida en un sitio emblemático.",
+    incluye: ["Accesos privados", "Guía historiador", "Transporte ejecutivo", "Comida en sitio emblemático"],
+    inversion: 3,
+    idealPara: { objetivo: ["clientes", "integracion"], tamano: ["xs", "s"], ambiente: ["cultura"], formato: ["medio", "dia"] },
+  },
+  {
+    nombre: "Escapada Corporativa Todo Incluido",
+    categoria: "Aventura",
+    descripcion: "Un fin de semana en un destino de playa o montaña con actividades, fiesta y cero preocupaciones.",
+    incluye: ["Hospedaje y vuelos/traslados", "Actividades diarias", "Noche temática", "Coordinación 24/7"],
+    inversion: 4,
+    idealPara: { objetivo: ["integracion", "celebrar", "finanio"], tamano: ["s", "m", "l"], ambiente: ["aventura", "bienestar", "gala"], formato: ["finde"] },
+  },
+  {
+    nombre: "Obra de Arte Colaborativa",
+    categoria: "Cultura",
+    descripcion: "Guiados por un artista, todos crean juntos una pieza que se queda en la oficina como símbolo del equipo.",
+    incluye: ["Artista facilitador", "Materiales profesionales", "Montaje de la obra", "Coffee break de autor"],
+    inversion: 2,
+    idealPara: { objetivo: ["integracion", "lanzamiento"], tamano: ["xs", "s", "m"], ambiente: ["cultura"], formato: ["medio"] },
+  },
+];
+
+/* =====================================================================
+   🚫 DE AQUÍ PARA ABAJO NO NECESITAS CAMBIAR NADA
+   ===================================================================== */
+</script>
+<style>
+  :root { --fondo:#0E1726; --fondo2:#16223A; --dorado:#C9A96E; --doradoClaro:#E6D3A8; --crema:#F6F1E7; --suave:#9AA6BC; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { background: var(--fondo); color: var(--crema); font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.5; min-height: 100vh; }
+  body::before { content:""; position: fixed; inset: 0; pointer-events: none;
+    background: radial-gradient(900px 500px at 85% -10%, color-mix(in srgb, var(--dorado) 18%, transparent), transparent 70%),
+                radial-gradient(700px 400px at -10% 110%, color-mix(in srgb, var(--dorado) 10%, transparent), transparent 70%); }
+  .wrap { position: relative; max-width: 1080px; margin: 0 auto; padding: 24px 16px 56px; }
+  .serif { font-family: "Playfair Display", Georgia, serif; }
+  header.top { display:flex; align-items:center; justify-content:space-between; gap:12px; padding-bottom: 20px; border-bottom: 1px solid color-mix(in srgb, var(--dorado) 25%, transparent); }
+  .logo { font-family:"Playfair Display", Georgia, serif; font-size: 20px; letter-spacing: .02em; }
+  .logo b { color: var(--dorado); font-weight: 600; }
+  .chip { font-size: 12px; color: var(--doradoClaro); border:1px solid color-mix(in srgb, var(--dorado) 40%, transparent); padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+
+  .btn { appearance:none; border:0; cursor:pointer; font: 600 16px Inter, system-ui, sans-serif; border-radius: 14px; padding: 16px 24px; min-height: 52px; transition: transform .15s ease, background .2s, opacity .2s; }
+  .btn:active { transform: scale(.98); }
+  .btn-oro { background: var(--dorado); color: var(--fondo); }
+  .btn-oro:hover { background: var(--doradoClaro); }
+  .btn-oro[disabled] { opacity: .45; cursor: not-allowed; }
+  .btn-linea { background: transparent; color: var(--crema); border: 1px solid color-mix(in srgb, var(--crema) 25%, transparent); }
+  .btn-linea:hover { border-color: var(--dorado); }
+  .btn-grande { width: 100%; font-size: 18px; padding: 20px 24px; min-height: 64px; display:flex; align-items:center; justify-content:center; gap:10px; text-decoration:none; }
+
+  /* Inicio */
+  .hero { padding: 48px 0 40px; max-width: 720px; }
+  .hero .kicker { color: var(--dorado); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; margin-bottom: 14px; }
+  .hero h1 { font-family:"Playfair Display", Georgia, serif; font-size: clamp(34px, 7vw, 58px); line-height: 1.08; font-weight: 600; margin-bottom: 18px; }
+  .hero h1 em { color: var(--dorado); font-style: italic; }
+  .hero p { color: var(--suave); font-size: 18px; margin-bottom: 28px; }
+  .stats { display:flex; gap: 28px; flex-wrap: wrap; margin-top: 28px; color: var(--suave); font-size: 14px; }
+  .stats strong { display:block; font-family:"Playfair Display", Georgia, serif; color: var(--crema); font-size: 24px; }
+  h2.sec { font-family:"Playfair Display", Georgia, serif; font-size: 26px; font-weight: 600; margin: 24px 0 6px; }
+  .sub { color: var(--suave); margin-bottom: 18px; }
+  .filtros { display:flex; gap:8px; overflow-x:auto; padding-bottom: 8px; margin-bottom: 14px; scrollbar-width: none; }
+  .filtros::-webkit-scrollbar { display:none; }
+  .filtro { flex: 0 0 auto; background: transparent; color: var(--suave); border:1px solid color-mix(in srgb, var(--crema) 18%, transparent); border-radius:999px; padding: 8px 16px; font: 500 14px Inter, sans-serif; cursor:pointer; min-height: 40px; }
+  .filtro.on { background: var(--dorado); border-color: var(--dorado); color: var(--fondo); }
+  .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+  .card { background: var(--fondo2); border: 1px solid color-mix(in srgb, var(--crema) 8%, transparent); border-radius: 18px; overflow:hidden; display:flex; flex-direction:column; }
+  .card .vis { height: 120px; position: relative; display:flex; align-items:flex-end; padding: 14px 16px; }
+  .card .vis span { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--crema); background: rgba(14,23,38,.55); padding: 4px 10px; border-radius: 999px; backdrop-filter: blur(4px); }
+  .card .vis i { position:absolute; right: 14px; top: 6px; font-family:"Playfair Display", Georgia, serif; font-style: italic; font-size: 64px; color: rgba(246,241,231,.18); }
+  .card .body { padding: 16px; display:flex; flex-direction:column; gap: 8px; flex: 1; }
+  .card h3 { font-family:"Playfair Display", Georgia, serif; font-size: 20px; font-weight: 600; line-height: 1.2; }
+  .card p { color: var(--suave); font-size: 14px; }
+  .inv { margin-top:auto; font-size: 13px; color: var(--suave); padding-top: 6px; }
+  .inv b { color: var(--dorado); letter-spacing: 2px; font-weight: 400; }
+  .cta-bloque { margin-top: 36px; background: var(--fondo2); border:1px solid color-mix(in srgb, var(--dorado) 30%, transparent); border-radius: 20px; padding: 24px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap: 16px; }
+  .cta-bloque h3 { font-family:"Playfair Display", Georgia, serif; font-size: 22px; }
+  .cta-bloque p { color: var(--suave); }
+
+  /* Preguntas */
+  .quiz { max-width: 640px; margin: 32px auto 0; }
+  .progreso { display:flex; justify-content:space-between; font-size: 13px; color: var(--suave); margin-bottom: 10px; }
+  .barra { height: 6px; background: color-mix(in srgb, var(--crema) 10%, transparent); border-radius: 99px; overflow:hidden; margin-bottom: 32px; }
+  .barra div { height: 100%; background: var(--dorado); border-radius: 99px; transition: width .35s ease; }
+  .quiz h2 { font-family:"Playfair Display", Georgia, serif; font-size: clamp(26px, 5.5vw, 36px); line-height: 1.15; font-weight: 600; margin-bottom: 8px; }
+  .quiz .ayuda { color: var(--suave); margin-bottom: 24px; }
+  .opciones { display:grid; gap: 10px; }
+  .op { text-align:left; width:100%; cursor:pointer; background: var(--fondo2); color: var(--crema); border: 1.5px solid color-mix(in srgb, var(--crema) 10%, transparent); border-radius: 16px; padding: 16px 18px; min-height: 64px; display:flex; align-items:center; gap: 14px; font: inherit; transition: border-color .2s, background .2s; }
+  .op:hover { border-color: color-mix(in srgb, var(--dorado) 60%, transparent); }
+  .op .punto { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--suave); flex: 0 0 auto; display:grid; place-items:center; }
+  .op.sel { border-color: var(--dorado); background: color-mix(in srgb, var(--dorado) 12%, var(--fondo2)); }
+  .op.sel .punto { border-color: var(--dorado); background: var(--dorado); }
+  .op.sel .punto::after { content:""; width: 8px; height: 8px; border-radius: 50%; background: var(--fondo); }
+  .op strong { display:block; font-weight: 600; font-size: 16px; }
+  .op small { color: var(--suave); font-size: 14px; }
+  .nav { display:flex; gap: 10px; margin-top: 28px; }
+  .nav .btn-oro { flex: 1; }
+  .aviso { min-height: 22px; margin-top: 10px; font-size: 14px; color: var(--doradoClaro); text-align:center; }
+
+  /* Resultado */
+  .res { max-width: 760px; margin: 32px auto 0; }
+  .res .kicker { color: var(--dorado); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; margin-bottom: 10px; text-align:center; }
+  .ganadora { background: var(--fondo2); border: 1px solid color-mix(in srgb, var(--dorado) 45%, transparent); border-radius: 22px; overflow: hidden; box-shadow: 0 30px 80px -30px color-mix(in srgb, var(--dorado) 35%, transparent); }
+  .ganadora .vis { height: 160px; position:relative; display:flex; align-items:flex-end; justify-content:space-between; padding: 18px 22px; gap: 10px; }
+  .afinidad { background: var(--fondo); color: var(--dorado); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 14px; white-space: nowrap; }
+  .ganadora .body { padding: 22px; }
+  .ganadora h2 { font-family:"Playfair Display", Georgia, serif; font-size: clamp(28px, 6vw, 40px); line-height: 1.1; font-weight: 600; margin-bottom: 10px; }
+  .ganadora .desc { color: var(--suave); font-size: 17px; margin-bottom: 18px; }
+  .porque { background: color-mix(in srgb, var(--dorado) 8%, transparent); border-left: 3px solid var(--dorado); border-radius: 10px; padding: 14px 16px; margin-bottom: 18px; }
+  .porque b { color: var(--doradoClaro); display:block; margin-bottom: 4px; font-size: 14px; letter-spacing:.04em; }
+  .porque ul, .incluye { list-style: none; display:grid; gap: 6px; }
+  .porque li::before { content:"✓  "; color: var(--dorado); }
+  .incluye { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); margin-bottom: 18px; }
+  .incluye li { background: var(--fondo); border-radius: 10px; padding: 10px 12px; font-size: 14px; }
+  .incluye li::before { content:"◆  "; color: var(--dorado); font-size: 11px; }
+  .etq { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--suave); margin: 6px 0 10px; }
+  .perfil { display:flex; flex-wrap:wrap; gap: 8px; margin-bottom: 6px; }
+  .perfil span { font-size: 13px; border:1px solid color-mix(in srgb, var(--crema) 18%, transparent); border-radius: 999px; padding: 5px 12px; color: var(--crema); }
+  .final { margin-top: 24px; text-align:center; }
+  .final p { color: var(--suave); font-size: 14px; margin-top: 10px; }
+  .alts { margin-top: 36px; }
+  .acciones { display:flex; justify-content:center; margin-top: 28px; }
+  footer { margin-top: 48px; text-align:center; color: var(--suave); font-size: 13px; }
+  .fade { animation: fade .4s ease both; }
+  @keyframes fade { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform:none; } }
+  @media (max-width: 560px) {
+    .hero { padding-top: 32px; }
+    .hero p { font-size: 16px; }
+    .cta-bloque .btn { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="logo" id="logo"></div>
+    <div class="chip">Eventos corporativos</div>
+  </header>
+  <main id="app"></main>
+  <footer id="pie"></footer>
+</div>
+
+<script>
+(function () {
+  // Aplica colores
+  const root = document.documentElement.style;
+  Object.entries(COLORES).forEach(([k, v]) => root.setProperty("--" + k, v));
+
+  const GRADIENTES = {
+    "Aventura":    "linear-gradient(135deg,#1F4D3F,#5B8A5A)",
+    "Gastronomía": "linear-gradient(135deg,#5A2A1E,#B7703F)",
+    "Bienestar":   "linear-gradient(135deg,#2D4A5C,#7FA7A3)",
+    "Gala":        "linear-gradient(135deg,#2A1E3F,#8C6B3E)",
+    "Cultura":     "linear-gradient(135deg,#3B2A4D,#9A5B6E)",
+  };
+  const grad = (c) => GRADIENTES[c] || "linear-gradient(135deg,#22304D,#4A5B80)";
+  const esc = (s) => String(s).replace(/[&<>"']/g, (m) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]));
+  const puntos = (n) => "●".repeat(n) + "○".repeat(4 - n);
+
+  const partes = MARCA.nombre.split(" ");
+  document.getElementById("logo").innerHTML = "<b>" + esc(partes[0]) + "</b> " + esc(partes.slice(1).join(" "));
+  document.getElementById("pie").textContent = MARCA.pie;
+
+  const app = document.getElementById("app");
+  let paso = -1;            // -1 = inicio, 0..n-1 = preguntas, n = resultado
+  let respuestas = {};
+  let filtro = "Todas";
+
+  function tarjeta(e) {
+    return `<article class="card">
+      <div class="vis" style="background:${grad(e.categoria)}"><span>${esc(e.categoria)}</span><i>${esc(e.nombre[0])}</i></div>
+      <div class="body">
+        <h3>${esc(e.nombre)}</h3>
+        <p>${esc(e.descripcion)}</p>
+        <div class="inv">Inversión <b>${puntos(e.inversion)}</b></div>
+      </div></article>`;
+  }
+
+  function render() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (paso === -1) return inicio();
+    if (paso < PREGUNTAS.length) return pregunta();
+    return resultado();
+  }
+
+  function inicio() {
+    const cats = ["Todas", ...new Set(CATALOGO.map((e) => e.categoria))];
+    const lista = filtro === "Todas" ? CATALOGO : CATALOGO.filter((e) => e.categoria === filtro);
+    app.innerHTML = `<div class="fade">
+      <section class="hero">
+        <div class="kicker">Experiencias a la medida</div>
+        <h1 class="serif">El evento que tu equipo <em>no va a olvidar</em>.</h1>
+        <p>${esc(MARCA.eslogan)}</p>
+        <button class="btn btn-oro" id="empezar">${esc(MARCA.botonEmpezar)} →</button>
+        <div class="stats">
+          <div><strong>${CATALOGO.length}</strong>experiencias</div>
+          <div><strong>4</strong>preguntas</div>
+          <div><strong>1 min</strong>para tu propuesta</div>
+        </div>
+      </section>
+      <h2 class="sec">${esc(MARCA.tituloCatalogo)}</h2>
+      <p class="sub">Explora las opciones o deja que te recomendemos la ideal.</p>
+      <div class="filtros">${cats.map((c) => `<button class="filtro ${c === filtro ? "on" : ""}" data-c="${esc(c)}">${esc(c)}</button>`).join("")}</div>
+      <div class="grid">${lista.map(tarjeta).join("")}</div>
+      <div class="cta-bloque">
+        <div><h3>¿No sabes cuál elegir?</h3><p>Responde 4 preguntas y te decimos cuál va contigo.</p></div>
+        <button class="btn btn-oro" id="empezar2">Encontrar mi experiencia →</button>
+      </div></div>`;
+    const go = () => { paso = 0; render(); };
+    document.getElementById("empezar").onclick = go;
+    document.getElementById("empezar2").onclick = go;
+    app.querySelectorAll(".filtro").forEach((b) => (b.onclick = () => { filtro = b.dataset.c; inicio(); }));
+  }
+
+  function pregunta() {
+    const q = PREGUNTAS[paso];
+    const total = PREGUNTAS.length;
+    const elegida = respuestas[q.id];
+    app.innerHTML = `<section class="quiz fade">
+      <div class="progreso"><span>Pregunta ${paso + 1} de ${total}</span><span>${Math.round((paso / total) * 100)}%</span></div>
+      <div class="barra"><div style="width:${((paso + 1) / total) * 100}%"></div></div>
+      <h2>${esc(q.titulo)}</h2>
+      <p class="ayuda">${esc(q.ayuda)}</p>
+      <div class="opciones" role="radiogroup">${q.opciones.map((o) => `
+        <button class="op ${elegida === o.valor ? "sel" : ""}" role="radio" aria-checked="${elegida === o.valor}" data-v="${esc(o.valor)}">
+          <span class="punto"></span><span><strong>${esc(o.etiqueta)}</strong><small>${esc(o.detalle)}</small></span>
+        </button>`).join("")}</div>
+      <div class="nav">
+        <button class="btn btn-linea" id="atras">← Atrás</button>
+        <button class="btn btn-oro" id="sig">${paso === total - 1 ? "Ver mi experiencia" : "Siguiente"} →</button>
+      </div>
+      <div class="aviso" id="aviso"></div>
+    </section>`;
+    app.querySelectorAll(".op").forEach((b) => (b.onclick = () => {
+      respuestas[q.id] = b.dataset.v;
+      app.querySelectorAll(".op").forEach((x) => { const on = x === b; x.classList.toggle("sel", on); x.setAttribute("aria-checked", on); });
+      document.getElementById("aviso").textContent = "";
+    }));
+    document.getElementById("atras").onclick = () => { paso -= 1; render(); };
+    document.getElementById("sig").onclick = () => {
+      if (!respuestas[q.id]) { document.getElementById("aviso").textContent = "Elige una opción para continuar."; return; }
+      paso += 1; render();
+    };
+  }
+
+  function calcular() {
+    const max = PREGUNTAS.reduce((s, q) => s + (PESOS[q.id] || 1), 0);
+    return CATALOGO.map((e, i) => {
+      let pts = 0; const coinc = [];
+      PREGUNTAS.forEach((q) => {
+        const v = respuestas[q.id];
+        if (e.idealPara[q.id] && e.idealPara[q.id].includes(v)) {
+          pts += PESOS[q.id] || 1;
+          const o = q.opciones.find((o) => o.valor === v);
+          const et = o.etiqueta.charAt(0).toLowerCase() + o.etiqueta.slice(1);
+          coinc.push((q.razon || "Ideal para {opcion}").replace("{opcion}", et));
+        }
+      });
+      // afinidad mínima 62% para que el resultado nunca se sienta pobre
+      const afin = Math.round(62 + (pts / max) * 37);
+      return { e, i, pts, coinc, afin };
+    }).sort((a, b) => b.pts - a.pts || a.i - b.i);
+  }
+
+  function linkFinal(nombre) {
+    if (!AGREGAR_RESUMEN_AL_WHATSAPP || !/wa\.me|whatsapp\.com/.test(MI_LINK)) return MI_LINK;
+    const perfil = PREGUNTAS.map((q) => q.opciones.find((o) => o.valor === respuestas[q.id])?.etiqueta).filter(Boolean).join(" · ");
+    const txt = `Hola, me interesa cotizar la experiencia "${nombre}" con ${MARCA.nombre}. Mi evento: ${perfil}.`;
+    return MI_LINK + (MI_LINK.includes("?") ? "&" : "?") + "text=" + encodeURIComponent(txt);
+  }
+
+  function resultado() {
+    const ranking = calcular();
+    const top = ranking[0];
+    const e = top.e;
+    const perfil = PREGUNTAS.map((q) => q.opciones.find((o) => o.valor === respuestas[q.id])).filter(Boolean);
+    const razones = top.coinc.length
+      ? top.coinc.map((t) => `<li>${esc(t)}</li>`).join("")
+      : `<li>Es la experiencia más versátil de nuestro catálogo y la adaptamos a lo que necesitas.</li>`;
+    app.innerHTML = `<section class="res fade">
+      <div class="kicker">${esc(MARCA.tituloResultado)}</div>
+      <article class="ganadora">
+        <div class="vis" style="background:${grad(e.categoria)}">
+          <span class="chip" style="background:rgba(14,23,38,.55);color:var(--crema)">${esc(e.categoria)}</span>
+          <span class="afinidad">${top.afin}% de afinidad</span>
+        </div>
+        <div class="body">
+          <h2>${esc(e.nombre)}</h2>
+          <p class="desc">${esc(e.descripcion)}</p>
+          <div class="porque"><b>Por qué es para ti</b><ul>${razones}</ul></div>
+          <div class="etq">Qué incluye</div>
+          <ul class="incluye">${e.incluye.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+          <div class="etq">Tu evento</div>
+          <div class="perfil">${perfil.map((o) => `<span>${esc(o.etiqueta)}</span>`).join("")}</div>
+          <div class="inv">Inversión <b>${puntos(e.inversion)}</b></div>
+          <div class="final">
+            <a class="btn btn-oro btn-grande" href="${esc(linkFinal(e.nombre))}" target="_blank" rel="noopener">${esc(MARCA.botonFinal)} →</a>
+            <p>${esc(MARCA.notaFinal)}</p>
+          </div>
+        </div>
+      </article>
+      <div class="alts">
+        <h2 class="sec">También podrían encantarte</h2>
+        <p class="sub">Otras opciones que encajan con tu evento.</p>
+        <div class="grid">${ranking.slice(1, 3).map((r) => tarjeta(r.e)).join("")}</div>
+      </div>
+      <div class="acciones"><button class="btn btn-linea" id="otra">↺ Volver a empezar</button></div>
+    </section>`;
+    document.getElementById("otra").onclick = () => { respuestas = {}; paso = -1; filtro = "Todas"; render(); };
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
